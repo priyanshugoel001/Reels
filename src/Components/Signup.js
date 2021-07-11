@@ -10,6 +10,7 @@ function Signup() {
     const [file,setFile] = useState(null)
     const {signup} =useContext(AuthContext);
     const handleSignup =async (e)=>{
+        try{
         e.preventDefault();
         setLoading(true);
         let res = await signup(email,password);
@@ -20,8 +21,40 @@ function Signup() {
         // fn1  this is for progress
         // fn2 this is for error
         // fn3 is for success
+            function fn1(snapshot){
+             var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+             console.log('Upload is ' + progress + '% done');         
+            }
+           function fn2(error){
+             setError(error);
+             setTimeout(()=>{
+                setError('')
+              },2000);
+             setLoading(false)
+            }
+            async function fn3(){
+              let downloadUrl = await uploadTaskListener.snapshot.ref.getDownloadURL();
         uploadTaskListener.on('state_changed',fn1,fn2,fn3)
+        await database.users.doc(uid).set({
+            email:email,
+            username:name,
+            userId:uid,
+            profileUrl:downloadUrl,
+            createdAt:database.getCurrentTimeStamp(),
+            postId:[]
+        })
+        setLoading(false);
+        console.log("user has signed Up");
+        }}
+        catch(error)
+        {
+            console.log(error);
+            setError(error);
+            setTimeout(()=>{
+            },2000);
+            setLoading(false);
         }
+    }
     const handlefileSubmit=(e)=>{
         const file=e.target.files[0];
         if(file!=null)
