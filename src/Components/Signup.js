@@ -26,7 +26,7 @@ function Signup() {
         // fn3 -> success
         uploadTaskListener.on('state_changed',fn1,fn2,fn3);
         function fn1(snapshot){
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            var progress = (snapshot.bytesTransferred/snapshot.totalBytes) * 100;
             console.log('Upload is ' + progress + '% done');         
         }
         function fn2(error){
